@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сыроварня — натуральные молочные продукты</title>
+<style>
+  :root{
+    --cream:#fbf7ef;--paper:#fffdf8;--green:#355b43;--green2:#587a5c;
+    --sage:#e7eee2;--ink:#26352b;--muted:#69766a;--line:#e4e5d9;
+    --gold:#d6a756;--danger:#a23b32;--shadow:0 14px 36px rgba(42,62,43,.09);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+  button,input,textarea,select{font:inherit}
+  button{cursor:pointer}
+  .wrap{max-width:1160px;margin:auto;padding:0 22px}
+  .topbar{background:var(--green);color:#fff;padding:10px 0;font-size:13px;text-align:center;letter-spacing:.04em}
+  header{padding:22px 0;border-bottom:1px solid var(--line);background:rgba(255,253,248,.92)}
+  .head{display:flex;align-items:center;justify-content:space-between;gap:18px}
+  .brand{display:flex;align-items:center;gap:12px;color:var(--green);font-weight:800;font-size:25px;text-decoration:none;letter-spacing:-.04em}
+  .logo{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:var(--sage);font-size:24px}
+  nav{display:flex;gap:22px;align-items:center}
+  nav a{color:var(--ink);text-decoration:none;font-weight:650;font-size:14px}
+  .cart-top,.btn{border:0;border-radius:999px;background:var(--green);color:white;padding:12px 18px;font-weight:750}
+  .cart-top:hover,.btn:hover{background:#284833}
+  .hero{padding:64px 0 50px}
+  .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center}
+  .eyebrow{text-transform:uppercase;letter-spacing:.16em;color:var(--green2);font-weight:800;font-size:12px}
+  h1{font-size:clamp(38px,5vw,62px);line-height:1.04;letter-spacing:-.055em;margin:14px 0 18px;color:var(--green)}
+  .hero p{font-size:18px;max-width:560px;color:var(--muted)}
+  .hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+  .btn.secondary{background:transparent;color:var(--green);border:1px solid #b9c8b7}
+  .hero-art{min-height:340px;border-radius:28px;overflow:hidden;position:relative;background:linear-gradient(145deg,#dfe8d6,#f2dfb8);display:grid;place-items:center}
+  .hero-art img{width:100%;height:100%;min-height:340px;object-fit:cover;position:absolute;inset:0}
+  .hero-note{position:absolute;bottom:18px;left:18px;background:rgba(255,253,248,.94);border-radius:16px;padding:13px 16px;max-width:220px;box-shadow:var(--shadow)}
+  .hero-note strong{display:block;color:var(--green)}
+  section{padding:36px 0}
+  .section-head{display:flex;justify-content:space-between;align-items:end;gap:18px;margin-bottom:22px}
+  h2{font-size:clamp(27px,3vw,38px);line-height:1.15;margin:7px 0;color:var(--green);letter-spacing:-.04em}
+  .section-head p{margin:0;color:var(--muted)}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 24px}
+  .filter{border:1px solid var(--line);background:var(--paper);padding:9px 15px;border-radius:999px;color:var(--green);font-weight:700}
+  .filter.active{background:var(--green);color:white;border-color:var(--green)}
+  .products{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+  .product{background:var(--paper);border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 5px 18px rgba(42,62,43,.035);display:flex;flex-direction:column}
+  .product img{width:100%;height:205px;object-fit:cover;background:var(--sage)}
+  .product-body{padding:17px;display:flex;flex-direction:column;flex:1}
+  .tag{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--green2);font-weight:800}
+  .product h3{margin:6px 0 7px;color:var(--green);font-size:20px}
+  .product p{margin:0 0 16px;color:var(--muted);font-size:14px;flex:1}
+  .product-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .price{font-size:20px;font-weight:850;color:var(--green)}
+  .price small{font-size:12px;font-weight:600;color:var(--muted)}
+  .add{border:0;border-radius:12px;background:var(--sage);color:var(--green);font-weight:800;padding:10px 13px}
+  .add:hover{background:#d6e3d0}
+  .about{background:var(--sage);border-radius:24px;padding:28px;display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:center}
+  .about p{color:var(--muted);margin-bottom:0}
+  .benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .benefit{background:rgba(255,255,255,.65);padding:16px;border-radius:16px;font-size:14px;font-weight:700}
+  .benefit span{display:block;font-size:22px;margin-bottom:8px}
+  .checkout-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+  .panel{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:22px}
+  .panel h3{margin:0 0 14px;color:var(--green);font-size:22px}
+  .empty{color:var(--muted);padding:18px 0}
+  .cart-item{display:grid;grid-template-columns:1fr auto;gap:8px;padding:13px 0;border-bottom:1px solid var(--line)}
+  .cart-item:last-child{border-bottom:0}
+  .cart-name{font-weight:750}
+  .cart-unit{font-size:13px;color:var(--muted)}
+  .qty{display:flex;align-items:center;gap:8px;margin-top:8px}
+  .qty button{border:1px solid var(--line);background:white;color:var(--green);width:30px;height:30px;border-radius:9px;font-weight:800}
+  .qty span{min-width:18px;text-align:center;font-weight:800}
+  .cart-price{font-weight:800;white-space:nowrap}
+  .total{display:flex;justify-content:space-between;gap:10px;padding-top:18px;margin-top:8px;border-top:2px solid var(--line);font-size:19px;font-weight:850;color:var(--green)}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+  .field.full{grid-column:1/-1}
+  label{font-size:13px;font-weight:750;color:var(--green)}
+  input,textarea,select{width:100%;border:1px solid #d7ddd1;border-radius:11px;background:#fff;padding:12px;color:var(--ink);outline:none}
+  input:focus,textarea:focus,select:focus{border-color:var(--green2);box-shadow:0 0 0 3px rgba(88,122,92,.12)}
+  textarea{min-height:90px;resize:vertical}
+  .help{font-size:12px;color:var(--muted);margin:9px 0 15px}
+  .notice{padding:12px 14px;border-radius:12px;background:#fff3d8;color:#6c5121;font-size:13px;margin-bottom:14px}
+  .status{margin-top:12px;font-size:14px;color:var(--green);font-weight:650}
+  footer{margin-top:50px;background:#233e2d;color:#f6f4eb;padding:34px 0}
+  footer .foot{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap}
+  footer p{margin:5px 0;color:#d5dfd2;font-size:13px}
+  .tiny{font-size:12px;color:#d5dfd2}
+  @media(max-width:800px){
+    .hero-grid,.about,.checkout-grid{grid-template-columns:1fr}
+    .hero{padding:42px 0 24px}
+    .hero-art,.hero-art img{min-height:260px}
+    .products{grid-template-columns:repeat(2,minmax(0,1fr))}
+    nav{gap:10px}nav a{display:none}
+    .benefits{grid-template-columns:1fr}
+  }
+  @media(max-width:520px){
+    .wrap{padding:0 14px}
+    .head{gap:10px}.brand{font-size:21px}.logo{width:40px;height:40px}
+    .cart-top{padding:10px 12px;font-size:13px}
+    .products{grid-template-columns:1fr 1fr;gap:10px}
+    .product img{height:135px}.product-body{padding:12px}
+    .product h3{font-size:16px}.product p{font-size:12px}
+    .price{font-size:17px}.add{padding:9px;font-size:12px}
+    .section-head{display:block}
+    .form-grid{grid-template-columns:1fr}
+    .field.full{grid-column:auto}
+    .panel{padding:16px}
+  }
+</style>
+</head>
+<body>
+<div class="topbar">НАТУРАЛЬНЫЕ ПРОДУКТЫ · СДЕЛАНО С ЗАБОТОЙ</div>
+<header>
+  <div class="wrap head">
+    <a class="brand" href="#home"><span class="logo">🧀</span><span>Сыроварня</span></a>
+    <nav><a href="#catalog">Каталог</a><a href="#about">О нас</a><a href="#order">Заказ</a></nav>
+    <button class="cart-top" onclick="document.querySelector('#order').scrollIntoView({behavior:'smooth'})">Корзина <span id="cartCount">0</span></button>
+  </div>
+</header>
+
+<main>
+  <section class="hero" id="home">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow">Вкус простых и натуральных продуктов</div>
+        <h1>Хороший вкус начинается с молока</h1>
+        <p>Сыры и молочные продукты для уютных завтраков, семейных ужинов и маленьких радостей каждый день.</p>
+        <div class="hero-actions">
+          <a class="btn" href="#catalog" style="text-decoration:none">Выбрать продукты</a>
+          <a class="btn secondary" href="#about" style="text-decoration:none">О нашей сыроварне</a>
+        </div>
+      </div>
+      <div class="hero-art">
+        <img src="https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?auto=format&fit=crop&w=1200&q=85" alt="Сыры на деревянной доске">
+        <div class="hero-note"><strong>С любовью к простому</strong><span>Вкусные продукты для вашего стола</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="catalog">
+    <div class="wrap">
+      <div class="section-head">
+        <div><div class="eyebrow">Выберите любимое</div><h2>Каталог продуктов</h2><p>Добавьте товары в корзину — сумма посчитается автоматически.</p></div>
+      </div>
+      <div class="filters" id="filters">
+        <button class="filter active" data-filter="all">Все продукты</button>
+        <button class="filter" data-filter="cheese">Сыры</button>
+        <button class="filter" data-filter="dairy">Молочные продукты</button>
+      </div>
+      <div class="products" id="products"></div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="wrap">
+      <div class="about">
+        <div><div class="eyebrow">О нашей сыроварне</div><h2>Натурально. Просто. Вкусно.</h2><p>Мы верим, что хорошие продукты делают каждый день немного лучше. Здесь можно рассказать о вашей сыроварне, ингредиентах, способе производства и доставке.</p></div>
+        <div class="benefits">
+          <div class="benefit"><span>🥛</span>Понятный состав</div>
+          <div class="benefit"><span>🧀</span>Разные вкусы</div>
+          <div class="benefit"><span>🌿</span>С заботой о качестве</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="order">
+    <div class="wrap">
+      <div class="section-head"><div><div class="eyebrow">Оформление</div><h2>Ваш заказ</h2><p>Проверьте корзину и оставьте контактные данные.</p></div></div>
+      <div class="checkout-grid">
+        <div class="panel">
+          <h3>Корзина</h3>
+          <div id="cartItems" aria-live="polite"></div>
+          <div class="total"><span>Итого</span><span id="cartTotal">0 ₽</span></div>
+        </div>
+        <div class="panel">
+          <h3>Данные покупателя</h3>
+          <div class="notice">Это заявка на заказ, а не онлайн-оплата. Мы свяжемся с вами для подтверждения наличия, доставки и итоговой суммы.</div>
+          <form id="orderForm">
+            <div class="form-grid">
+              <div class="field"><label for="customerName">Имя *</label><input id="customerName" name="name" required autocomplete="name" placeholder="Как к вам обращаться"></div>
+              <div class="field"><label for="customerContact">Телефон или email *</label><input id="customerContact" name="contact" required autocomplete="email" placeholder="+7… или email"></div>
+              <div class="field full"><label for="delivery">Получение заказа *</label><select id="delivery" name="delivery" required><option value="">Выберите вариант</option><option>Доставка</option><option>Самовывоз</option><option>Обсудить при подтверждении</option></select></div>
+              <div class="field full"><label for="address">Адрес / удобное место (если нужно)</label><input id="address" name="address" placeholder="Необязательно"></div>
+              <div class="field full"><label for="comment">Комментарий к заказу</label><textarea id="comment" name="comment" placeholder="Пожелания, удобное время и т. п."></textarea></div>
+            </div>
+            <p class="help">Отправляя форму, вы соглашаетесь на использование этих данных для обработки заказа. Добавьте ссылку на политику конфиденциальности перед публикацией.</p>
+            <button class="btn" type="submit" style="width:100%">Отправить заявку</button>
+            <div class="status" id="formStatus" role="status"></div>
+          </form>
+          <p class="help">Для реальной отправки заявок подключите Google Forms в настройках ниже в инструкции.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<footer>
+  <div class="wrap foot">
+    <div><strong>🧀 Сыроварня</strong><p>Вкус натуральных продуктов</p></div>
+    <div><p>Каталог · Заказ · Контакты</p><p class="tiny">Замените демонстрационные цены и описания на актуальные данные.</p></div>
+  </div>
+</footer>
+
+<script>
+const PRODUCTS = [
+  {id:"gouda",name:"Сыр полутвёрдый",category:"cheese",description:"Нежный сливочный вкус. Укажите свой сорт и выдержку.",price:850,unit:"за 1 кг",emoji:"🧀",image:"https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?auto=format&fit=crop&w=700&q=80"},
+  {id:"mozzarella",name:"Моцарелла",category:"cheese",description:"Мягкий сыр для салатов, пиццы и лёгких закусок.",price:690,unit:"за 500 г",emoji:"🧀",image:"https://images.unsplash.com/photo-1559561853-08451507cbe7?auto=format&fit=crop&w=700&q=80"},
+  {id:"chevre",name:"Творожный сыр",category:"cheese",description:"Нежная текстура для завтраков и десертов.",price:420,unit:"за 300 г",emoji:"🧀",image:"https://images.unsplash.com/photo-1634487359989-3e90c9432133?auto=format&fit=crop&w=700&q=80"},
+  {id:"cottage",name:"Творог",category:"dairy",description:"Классический продукт для завтрака и выпечки.",price:220,unit:"за 400 г",emoji:"🥣",image:"https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=700&q=80"},
+  {id:"butter",name:"Сливочное масло",category:"dairy",description:"Для тостов, каши и домашней выпечки.",price:260,unit:"за 200 г",emoji:"🧈",image:"https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&w=700&q=80"},
+  {id:"milk",name:"Молоко",category:"dairy",description:"Добавьте жирность, объём и условия хранения.",price:120,unit:"за 1 л",emoji:"🥛",image:"https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=700&q=80"}
+];
+const cart = new Map();
+const rubles = n => new Intl.NumberFormat("ru-RU",{style:"currency",currency:"RUB",maximumFractionDigits:0}).format(n);
+const productsEl = document.getElementById("products");
+const cartItemsEl = document.getElementById("cartItems");
+const cartTotalEl = document.getElementById("cartTotal");
+const cartCountEl = document.getElementById("cartCount");
+const formStatus = document.getElementById("formStatus");
+let activeFilter = "all";
+
+function renderProducts(){
+  productsEl.innerHTML = "";
+  PRODUCTS.filter(p=>activeFilter==="all"||p.category===activeFilter).forEach(p=>{
+    const card = document.createElement("article");
+    card.className="product";
+    card.innerHTML = `
+      <img loading="lazy" src="${p.image}" alt="${p.name}" onerror="this.style.display='none'">
+      <div class="product-body">
+        <div class="tag">${p.category==="cheese"?"Сыры":"Молочные продукты"}</div>
+        <h3>${p.name}</h3>
+        <p>${p.description}</p>
+        <div class="product-bottom">
+          <div class="price">${rubles(p.price)}<br><small>${p.unit}</small></div>
+          <button class="add" type="button" data-add="${p.id}">+ В корзину</button>
+        </div>
+      </div>`;
+    productsEl.appendChild(card);
+  });
+}
+function renderCart(){
+  cartItemsEl.innerHTML = "";
+  let count=0,total=0;
+  if(cart.size===0){cartItemsEl.innerHTML='<div class="empty">Корзина пока пуста. Добавьте продукты из каталога.</div>';}
+  cart.forEach((qty,id)=>{
+    const p=PRODUCTS.find(x=>x.id===id); if(!p)return;
+    count+=qty; total+=p.price*qty;
+    const row=document.createElement("div");row.className="cart-item";
+    row.innerHTML=`
+      <div><div class="cart-name">${p.name}</div><div class="cart-unit">${p.unit}</div>
+      <div class="qty"><button type="button" data-minus="${id}" aria-label="Уменьшить">−</button><span>${qty}</span><button type="button" data-plus="${id}" aria-label="Увеличить">+</button></div></div>
+      <div class="cart-price">${rubles(p.price*qty)}</div>`;
+    cartItemsEl.appendChild(row);
+  });
+  cartCountEl.textContent=count;
+  cartTotalEl.textContent=rubles(total);
+}
+document.addEventListener("click",e=>{
+  const add=e.target.closest("[data-add]");
+  const plus=e.target.closest("[data-plus]");
+  const minus=e.target.closest("[data-minus]");
+  if(add){const id=add.dataset.add;cart.set(id,(cart.get(id)||0)+1);renderCart();document.getElementById("order").scrollIntoView({behavior:"smooth"});}
+  if(plus){const id=plus.dataset.plus;cart.set(id,(cart.get(id)||0)+1);renderCart();}
+  if(minus){const id=minus.dataset.minus;const q=(cart.get(id)||0)-1;if(q<=0)cart.delete(id);else cart.set(id,q);renderCart();}
+});
+document.getElementById("filters").addEventListener("click",e=>{
+  const btn=e.target.closest("[data-filter]");if(!btn)return;
+  activeFilter=btn.dataset.filter;
+  document.querySelectorAll(".filter").forEach(b=>b.classList.toggle("active",b===btn));
+  renderProducts();
+});
+
+const GOOGLE_FORM_ACTION = ""; // Вставьте URL отправки Google Form сюда после настройки.
+const FORM_ENTRY_IDS = {name:"",contact:"",delivery:"",address:"",comment:"",order:"",total:""};
+
+document.getElementById("orderForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  if(cart.size===0){formStatus.textContent="Сначала добавьте хотя бы один товар в корзину.";return;}
+  const f=e.currentTarget;
+  const orderLines=[...cart.entries()].map(([id,qty])=>{
+    const p=PRODUCTS.find(x=>x.id===id);return `${p.name} — ${qty} × ${p.unit} (${rubles(p.price*qty)})`;
+  });
+  const total=[...cart.entries()].reduce((sum,[id,qty])=>sum+PRODUCTS.find(p=>p.id===id).price*qty,0);
+  const data={
+    name:f.name.value.trim(),contact:f.contact.value.trim(),delivery:f.delivery.value,
+    address:f.address.value.trim(),comment:f.comment.value.trim(),
+    order:orderLines.join("\n"),total:rubles(total)
+  };
+  if(!GOOGLE_FORM_ACTION || Object.values(FORM_ENTRY_IDS).some(v=>!v)){
+    const text=[
+      "ЗАКАЗ — Сыроварня","",
+      ...orderLines,"",`Итого: ${rubles(total)}`,"",
+      `Имя: ${data.name}`,`Контакт: ${data.contact}`,`Получение: ${data.delivery}`,
+      `Адрес: ${data.address||"не указан"}`,`Комментарий: ${data.comment||"нет"}`
+    ].join("\n");
+    const w=window.open("","_blank");
+    if(w){w.document.write(`<title>Заказ — Сыроварня</title><pre style="white-space:pre-wrap;font:16px/1.5 system-ui;padding:24px">${text.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}</pre><button onclick="navigator.clipboard.writeText(document.querySelector('pre').innerText)">Скопировать заказ</button>`);w.document.close();}
+    formStatus.textContent="Google Forms ещё не подключена. Открылась заготовка заказа — скопируйте её. Для реальной отправки настройте форму по инструкции.";
+    return;
+  }
+  const body=new URLSearchParams();
+  Object.keys(data).forEach(k=>body.append(FORM_ENTRY_IDS[k],data[k]));
+  try{
+    await fetch(GOOGLE_FORM_ACTION,{method:"POST",mode:"no-cors",body});
+    formStatus.textContent="Заявка отправлена! Спасибо. Если появятся сомнения, проверьте ответы в Google Forms.";
+    cart.clear();renderCart();f.reset();
+  }catch(err){
+    formStatus.textContent="Не удалось отправить заявку. Попробуйте ещё раз или свяжитесь с магазином.";
+  }
+});
+renderProducts();renderCart();
+</script>
+</body>
+</html>
