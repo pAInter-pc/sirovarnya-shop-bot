@@ -86,6 +86,31 @@
   footer .foot{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap}
   footer p{margin:5px 0;color:#d5dfd2;font-size:13px}
   .tiny{font-size:12px;color:#d5dfd2}
+
+  .product{cursor:pointer;transition:transform .18s ease,box-shadow .18s ease}
+  .product:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+  .product .add{position:relative;z-index:2}
+  .detail-overlay{display:none;position:fixed;inset:0;z-index:1000;align-items:center;justify-content:center;padding:20px}
+  .detail-overlay.open{display:flex}
+  .detail-backdrop{position:absolute;inset:0;background:rgba(22,35,25,.64);backdrop-filter:blur(3px)}
+  .detail-dialog{position:relative;z-index:1;background:var(--paper);width:min(900px,100%);max-height:90vh;overflow:auto;border-radius:24px;padding:26px;box-shadow:0 25px 80px rgba(0,0,0,.25)}
+  .detail-close{position:absolute;right:15px;top:12px;width:40px;height:40px;border:0;border-radius:50%;background:var(--sage);color:var(--green);font-size:28px;line-height:1}
+  .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center}
+  .detail-image{width:100%;height:360px;object-fit:cover;border-radius:18px;background:var(--sage)}
+  .detail-copy{padding:14px 10px}
+  .detail-copy h2{font-size:clamp(28px,4vw,42px);margin:10px 0}
+  .detail-copy p{color:var(--muted)}
+  .detail-price{font-size:26px;font-weight:850;color:var(--green);margin:12px 0}
+  .detail-unit{font-size:13px}
+  .detail-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+  @media(max-width:650px){
+    .detail-overlay{padding:10px}
+    .detail-dialog{padding:18px;border-radius:18px}
+    .detail-grid{grid-template-columns:1fr;gap:12px}
+    .detail-image{height:230px}
+    .detail-copy{padding:4px 0}
+  }
+
   @media(max-width:800px){
     .hero-grid,.about,.checkout-grid{grid-template-columns:1fr}
     .hero{padding:42px 0 24px}
@@ -118,6 +143,28 @@
     <button class="cart-top" onclick="document.querySelector('#order').scrollIntoView({behavior:'smooth'})">Корзина <span id="cartCount">0</span></button>
   </div>
 </header>
+
+
+<div class="detail-overlay" id="productDetail" aria-hidden="true">
+  <div class="detail-backdrop" data-close-detail></div>
+  <section class="detail-dialog" role="dialog" aria-modal="true" aria-labelledby="detailName">
+    <button class="detail-close" type="button" data-close-detail aria-label="Закрыть">×</button>
+    <div class="detail-grid">
+      <img id="detailImage" class="detail-image" src="" alt="">
+      <div class="detail-copy">
+        <div class="eyebrow" id="detailCategory">Продукт</div>
+        <h2 id="detailName">Название продукта</h2>
+        <div class="detail-price" id="detailPrice"></div>
+        <p id="detailDescription"></p>
+        <p class="detail-unit" id="detailUnit"></p>
+        <div class="detail-actions">
+          <button class="btn" type="button" id="detailAdd">Добавить в корзину</button>
+          <button class="btn secondary" type="button" data-close-detail>Вернуться в каталог</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
 
 <main>
   <section class="hero" id="home">
@@ -189,7 +236,7 @@
             <button class="btn" type="submit" style="width:100%">Отправить заявку</button>
             <div class="status" id="formStatus" role="status"></div>
           </form>
-          <p class="help">Для реальной отправки заявок подключите Google Forms в настройках ниже в инструкции.</p>
+          <p class="help">При оформлении заказа сайт откроет Google Forms и подготовит данные заказа для копирования. Нужно вручную вставить их в поля формы и нажать «Отправить».</p>
         </div>
       </div>
     </div>
@@ -203,7 +250,7 @@
 </footer>
 
 <script>
-const PRODUCTS = [
+// Нажатие на карточку открывает подробную страницу товара; кнопка добавления работает отдельно.\nconst PRODUCTS = [
   {id:"gouda",name:"Сыр полутвёрдый",category:"cheese",description:"Нежный сливочный вкус. Укажите свой сорт и выдержку.",price:850,unit:"за 1 кг",emoji:"🧀",image:"https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?auto=format&fit=crop&w=700&q=80"},
   {id:"mozzarella",name:"Моцарелла",category:"cheese",description:"Мягкий сыр для салатов, пиццы и лёгких закусок.",price:690,unit:"за 500 г",emoji:"🧀",image:"https://images.unsplash.com/photo-1559561853-08451507cbe7?auto=format&fit=crop&w=700&q=80"},
   {id:"chevre",name:"Творожный сыр",category:"cheese",description:"Нежная текстура для завтраков и десертов.",price:420,unit:"за 300 г",emoji:"🧀",image:"https://images.unsplash.com/photo-1634487359989-3e90c9432133?auto=format&fit=crop&w=700&q=80"},
@@ -225,6 +272,10 @@ function renderProducts(){
   PRODUCTS.filter(p=>activeFilter==="all"||p.category===activeFilter).forEach(p=>{
     const card = document.createElement("article");
     card.className="product";
+    card.dataset.openProduct = p.id;
+    card.tabIndex = 0;
+    card.setAttribute("role","button");
+    card.setAttribute("aria-label",`Подробнее: ${p.name}`);
     card.innerHTML = `
       <img loading="lazy" src="${p.image}" alt="${p.name}" onerror="this.style.display='none'">
       <div class="product-body">
@@ -256,13 +307,58 @@ function renderCart(){
   cartCountEl.textContent=count;
   cartTotalEl.textContent=rubles(total);
 }
+let currentDetailId = null;
+function openProductDetail(id){
+  const p = PRODUCTS.find(item => item.id === id);
+  if(!p) return;
+  currentDetailId = id;
+  document.getElementById("detailImage").src = p.image;
+  document.getElementById("detailImage").alt = p.name;
+  document.getElementById("detailCategory").textContent = p.category === "cheese" ? "Сыры" : "Молочные продукты";
+  document.getElementById("detailName").textContent = p.name;
+  document.getElementById("detailPrice").textContent = rubles(p.price);
+  document.getElementById("detailDescription").textContent = p.description;
+  document.getElementById("detailUnit").textContent = p.unit;
+  const overlay = document.getElementById("productDetail");
+  overlay.classList.add("open");
+  overlay.setAttribute("aria-hidden","false");
+  document.body.style.overflow = "hidden";
+}
+function closeProductDetail(){
+  const overlay = document.getElementById("productDetail");
+  overlay.classList.remove("open");
+  overlay.setAttribute("aria-hidden","true");
+  document.body.style.overflow = "";
+}
+document.getElementById("detailAdd").addEventListener("click",()=>{
+  if(!currentDetailId) return;
+  cart.set(currentDetailId,(cart.get(currentDetailId)||0)+1);
+  renderCart();
+  const button = document.getElementById("detailAdd");
+  button.textContent = "Добавлено в корзину ✓";
+  setTimeout(()=>{button.textContent="Добавить в корзину";},1200);
+});
 document.addEventListener("click",e=>{
+  const close = e.target.closest("[data-close-detail]");
   const add=e.target.closest("[data-add]");
   const plus=e.target.closest("[data-plus]");
   const minus=e.target.closest("[data-minus]");
-  if(add){const id=add.dataset.add;cart.set(id,(cart.get(id)||0)+1);renderCart();document.getElementById("order").scrollIntoView({behavior:"smooth"});}
-  if(plus){const id=plus.dataset.plus;cart.set(id,(cart.get(id)||0)+1);renderCart();}
-  if(minus){const id=minus.dataset.minus;const q=(cart.get(id)||0)-1;if(q<=0)cart.delete(id);else cart.set(id,q);renderCart();}
+  const card = e.target.closest("[data-open-product]");
+  if(close){closeProductDetail();return;}
+  if(add){
+    e.stopPropagation();
+    const id=add.dataset.add;cart.set(id,(cart.get(id)||0)+1);renderCart();
+    return;
+  }
+  if(plus){const id=plus.dataset.plus;cart.set(id,(cart.get(id)||0)+1);renderCart();return;}
+  if(minus){const id=minus.dataset.minus;const q=(cart.get(id)||0)-1;if(q<=0)cart.delete(id);else cart.set(id,q);renderCart();return;}
+  if(card){openProductDetail(card.dataset.openProduct);}
+});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape") closeProductDetail();
+  if((e.key==="Enter"||e.key===" ") && e.target.matches("[data-open-product]")){
+    e.preventDefault();openProductDetail(e.target.dataset.openProduct);
+  }
 });
 document.getElementById("filters").addEventListener("click",e=>{
   const btn=e.target.closest("[data-filter]");if(!btn)return;
@@ -271,8 +367,7 @@ document.getElementById("filters").addEventListener("click",e=>{
   renderProducts();
 });
 
-const GOOGLE_FORM_ACTION = ""; // Вставьте URL отправки Google Form сюда после настройки.
-const FORM_ENTRY_IDS = {name:"",contact:"",delivery:"",address:"",comment:"",order:"",total:""};
+const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScBokF51zjcOS6QGT5QXUx13d4lOo2wDJKlFu9v76gIx8PG7w/viewform";
 
 document.getElementById("orderForm").addEventListener("submit",async e=>{
   e.preventDefault();
@@ -285,28 +380,28 @@ document.getElementById("orderForm").addEventListener("submit",async e=>{
   const data={
     name:f.name.value.trim(),contact:f.contact.value.trim(),delivery:f.delivery.value,
     address:f.address.value.trim(),comment:f.comment.value.trim(),
-    order:orderLines.join("\n"),total:rubles(total)
+    order:orderLines.join("\\n"),total:rubles(total)
   };
-  if(!GOOGLE_FORM_ACTION || Object.values(FORM_ENTRY_IDS).some(v=>!v)){
-    const text=[
-      "ЗАКАЗ — Сыроварня","",
-      ...orderLines,"",`Итого: ${rubles(total)}`,"",
-      `Имя: ${data.name}`,`Контакт: ${data.contact}`,`Получение: ${data.delivery}`,
-      `Адрес: ${data.address||"не указан"}`,`Комментарий: ${data.comment||"нет"}`
-    ].join("\n");
-    const w=window.open("","_blank");
-    if(w){w.document.write(`<title>Заказ — Сыроварня</title><pre style="white-space:pre-wrap;font:16px/1.5 system-ui;padding:24px">${text.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}</pre><button onclick="navigator.clipboard.writeText(document.querySelector('pre').innerText)">Скопировать заказ</button>`);w.document.close();}
-    formStatus.textContent="Google Forms ещё не подключена. Открылась заготовка заказа — скопируйте её. Для реальной отправки настройте форму по инструкции.";
-    return;
-  }
-  const body=new URLSearchParams();
-  Object.keys(data).forEach(k=>body.append(FORM_ENTRY_IDS[k],data[k]));
+  const orderText=[
+    "ЗАКАЗ — Сыроварня","",
+    ...orderLines,"",`Итого: ${rubles(total)}`,"",
+    `Имя: ${data.name}`,`Контакт: ${data.contact}`,`Получение: ${data.delivery}`,
+    `Адрес: ${data.address||"не указан"}`,`Комментарий: ${data.comment||"нет"}`
+  ].join("\\n");
+
+  // Open the Google Form directly from the submit action so popup blockers are less likely to block it.
+  window.open(GOOGLE_FORM_URL,"_blank","noopener");
   try{
-    await fetch(GOOGLE_FORM_ACTION,{method:"POST",mode:"no-cors",body});
-    formStatus.textContent="Заявка отправлена! Спасибо. Если появятся сомнения, проверьте ответы в Google Forms.";
-    cart.clear();renderCart();f.reset();
+    await navigator.clipboard.writeText(orderText);
+    formStatus.textContent="Форма Google открылась в новой вкладке, а данные заказа скопированы. Вставь состав заказа, сумму и остальные данные в подходящие поля формы, затем нажми «Отправить». Заказ ещё не отправлен, пока ты не отправишь Google Form.";
   }catch(err){
-    formStatus.textContent="Не удалось отправить заявку. Попробуйте ещё раз или свяжитесь с магазином.";
+    const w=window.open("","_blank");
+    if(w){
+      w.document.write(`<title>Заказ — Сыроварня</title><p style="font:16px system-ui;padding:20px">Скопируй текст заказа ниже и вставь его в Google Form.</p><textarea style="width:95%;height:65vh;font:15px/1.5 system-ui"></textarea><button style="padding:10px 16px;margin-top:8px" onclick="const t=document.querySelector('textarea');t.select();document.execCommand('copy')">Выделить и скопировать</button>`);
+      w.document.querySelector("textarea").value=orderText;
+      w.document.close();
+    }
+    formStatus.textContent="Форма Google открылась. Автоматически скопировать данные не получилось, поэтому открой заготовку заказа в другой вкладке и скопируй её вручную. Заказ ещё не отправлен.";
   }
 });
 renderProducts();renderCart();
